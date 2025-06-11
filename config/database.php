@@ -10,7 +10,7 @@
 define('DB_HOST', 'localhost');
 
 // Database Username - your MySQL/MariaDB username
-define('DB_USER', 'yu662439561_mailbulk');
+define('DB_USER', '662439561_mailbulk');
 
 // Database Password - your MySQL/MariaDB password
 define('DB_PASS', 'BenTech#@5428#');
