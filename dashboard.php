@@ -1,5 +1,19 @@
-<?php include 'includes/header.php'; ?>
-<?php include 'includes/sidebar.php'; ?>
+<?php
+// It's crucial that database connection is established and functions are defined
+// before this page's content tries to use them.
+// Assuming index.php (which includes this file) handles including config/database.php.
+// We need to include our new dashboard functions here.
+require_once 'includes/dashboard_functions.php';
+
+// Fetch dashboard statistics
+$dashboard_stats = get_dashboard_stats();
+
+// Fetch recent campaigns
+$recent_campaigns = get_recent_campaigns(5); // Get 5 recent campaigns
+
+?>
+<?php include 'includes/header.php'; // Header already includes HTML head and start of body/container ?>
+<?php include 'includes/sidebar.php'; // Sidebar navigation ?>
 
             <!-- Main Content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
@@ -18,8 +32,9 @@
                         <div class="card stat-card">
                             <div class="card-body">
                                 <h5 class="card-title">Emails Sent</h5>
-                                <h2 class="card-text">1,245</h2>
-                                <p class="text-success">+12% from last week</p>
+                                <h2 class="card-text"><?php echo isset($dashboard_stats['total_emails_sent']) ? number_format($dashboard_stats['total_emails_sent']) : '0'; ?></h2>
+                                <!-- Static text for change, can be made dynamic later if needed -->
+                                <!-- <p class="text-success">+12% from last week</p> -->
                             </div>
                         </div>
                     </div>
@@ -27,8 +42,8 @@
                         <div class="card stat-card">
                             <div class="card-body">
                                 <h5 class="card-title">Open Rate</h5>
-                                <h2 class="card-text">32%</h2>
-                                <p class="text-success">+2% from last week</p>
+                                <h2 class="card-text"><?php echo isset($dashboard_stats['open_rate']) ? $dashboard_stats['open_rate'] . '%' : '0%'; ?></h2>
+                                <!-- <p class="text-success">+2% from last week</p> -->
                             </div>
                         </div>
                     </div>
@@ -36,8 +51,8 @@
                         <div class="card stat-card">
                             <div class="card-body">
                                 <h5 class="card-title">Click Rate</h5>
-                                <h2 class="card-text">8%</h2>
-                                <p class="text-danger">-1% from last week</p>
+                                <h2 class="card-text"><?php echo isset($dashboard_stats['click_rate']) ? $dashboard_stats['click_rate'] . '%' : '0%'; ?></h2>
+                                <!-- <p class="text-danger">-1% from last week</p> -->
                             </div>
                         </div>
                     </div>
@@ -45,8 +60,8 @@
                         <div class="card stat-card">
                             <div class="card-body">
                                 <h5 class="card-title">Bounce Rate</h5>
-                                <h2 class="card-text">1.2%</h2>
-                                <p class="text-success">-0.3% from last week</p>
+                                <h2 class="card-text"><?php echo isset($dashboard_stats['bounce_rate']) ? $dashboard_stats['bounce_rate'] . '%' : '0%'; ?></h2>
+                                <!-- <p class="text-success">-0.3% from last week</p> -->
                             </div>
                         </div>
                     </div>
@@ -64,51 +79,52 @@
                                     <tr>
                                         <th>Name</th>
                                         <th>Status</th>
-                                        <th>Sent</th>
+                                        <th>Sent/Scheduled</th>
                                         <th>Opens</th>
                                         <th>Clicks</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>Summer Course Announcement</td>
-                                        <td><span class="badge bg-success">Sent</span></td>
-                                        <td>Jun 5, 2023</td>
-                                        <td>42%</td>
-                                        <td>9%</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-primary">View</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Newsletter - May 2023</td>
-                                        <td><span class="badge bg-success">Sent</span></td>
-                                        <td>May 28, 2023</td>
-                                        <td>38%</td>
-                                        <td>7%</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-primary">View</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Webinar Invitation</td>
-                                        <td><span class="badge bg-warning">Scheduled</span></td>
-                                        <td>Jun 12, 2023</td>
-                                        <td>-</td>
-                                        <td>-</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-primary">Edit</button>
-                                        </td>
-                                    </tr>
+                                    <?php if (!empty($recent_campaigns)): ?>
+                                        <?php foreach ($recent_campaigns as $campaign): ?>
+                                            <tr>
+                                                <td><?php echo $campaign['name']; ?></td>
+                                                <td>
+                                                    <span class="badge bg-<?php
+                                                        switch (strtolower($campaign['status'])) {
+                                                            case 'sent': echo 'success'; break;
+                                                            case 'scheduled': echo 'warning'; break;
+                                                            case 'draft': echo 'secondary'; break;
+                                                            default: echo 'info'; break;
+                                                        }
+                                                    ?>"><?php echo $campaign['status']; ?></span>
+                                                </td>
+                                                <td><?php echo $campaign['sent_at_formatted']; ?></td>
+                                                <td><?php echo $campaign['opens_percentage']; ?></td>
+                                                <td><?php echo $campaign['clicks_percentage']; ?></td>
+                                                <td>
+                                                    <?php if (strtolower($campaign['status']) == 'draft' || strtolower($campaign['status']) == 'scheduled'): ?>
+                                                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                                    <?php else: ?>
+                                                        <button class="btn btn-sm btn-outline-primary">View</button>
+                                                    <?php endif; ?>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <tr>
+                                            <td colspan="6" class="text-center">No recent campaigns found.</td>
+                                        </tr>
+                                    <?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
             </main>
-        </div>
-    </div>
+        </div> <!-- .row -->
+    </div> <!-- .container-fluid -->
 
     <!-- Compose Email Modal -->
     <div class="modal fade" id="composeModal" tabindex="-1" aria-hidden="true">
@@ -119,6 +135,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <!-- Modal content remains unchanged from original HTML -->
                     <div class="row">
                         <div class="col-md-3">
                             <div class="mb-3">
