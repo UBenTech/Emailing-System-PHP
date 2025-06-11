@@ -1,6 +1,21 @@
 <?php
-require_once '../config/database.php';
-require_once 'functions.php';
+// Enable error reporting
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Define root path if not defined
+if (!defined('ROOT_PATH')) {
+    define('ROOT_PATH', dirname(__DIR__));
+}
+
+// Include required files using absolute paths
+require_once ROOT_PATH . '/config/database.php';
+require_once ROOT_PATH . '/includes/functions.php';
+
+// Ensure session is started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 function register_user($username, $email, $password) {
     global $conn;

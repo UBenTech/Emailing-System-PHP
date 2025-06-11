@@ -1,5 +1,19 @@
 <?php
-require_once '../includes/functions.php';
+// Enable error reporting
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Define the root path
+define('ROOT_PATH', dirname(__DIR__));
+
+// Include required files
+require_once ROOT_PATH . '/includes/functions.php';
+require_once ROOT_PATH . '/config/database.php';
+
+// Start the session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
