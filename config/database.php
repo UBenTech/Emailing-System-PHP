@@ -19,7 +19,7 @@ define('DB_PASS', 'BenTech#@5428#');
 define('DB_NAME', '662439561_bulkmail');
 
 // Create connection to MySQL server (without selecting database first)
-$conn = mysqli_connect(DB_HOST, DB_USER, DB_PASS);
+$conn = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
 // Check connection
 if (!$conn) {
