@@ -1,8 +1,8 @@
 <?php
 define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'mywebsite');
+define('DB_USER', 'u662439561_mailbulk');
+define('DB_PASS', 'BenTech#@5428#');
+define('DB_NAME', 'u662439561_bulkmail');
 
 $conn = mysqli_connect(DB_HOST, DB_USER, DB_PASS);
 
