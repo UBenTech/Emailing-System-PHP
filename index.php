@@ -9,7 +9,7 @@ if (!defined('ROOT_PATH')) {
 }
 
 // Connect to database using the app's main config
-$db_file = ROOT_PATH . '/config/database.php';
+$db_file = ROOT_PATH . 'bulkmail/config/database.php';
 if (!file_exists($db_file)) {
     die("Database configuration file not found at: $db_file");
 }
